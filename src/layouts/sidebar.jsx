@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { CircleUser, Menu, Package2 } from "lucide-react";
+import { CircleUser, Menu, Package2, Plus } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { navItems } from "../App";
+import { useState } from "react";
 
 const Layout = () => {
   return (
@@ -31,28 +32,56 @@ const Layout = () => {
   );
 };
 
-const Sidebar = () => (
-  <div className="hidden border-r bg-muted/40 md:block">
-    <div className="flex h-full max-h-screen flex-col gap-2">
-      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-        <NavLink to="/" className="flex items-center gap-2 font-semibold">
-          <Package2 className="h-6 w-6" />
-          <span>Acme Inc</span>
-        </NavLink>
-      </div>
-      <div className="flex-1">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-2">
-          {navItems.map((item) => (
-            <SidebarNavLink key={item.to} to={item.to}>
-              {item.icon}
-              {item.title}
-            </SidebarNavLink>
-          ))}
-        </nav>
+const Sidebar = () => {
+  const [projects, setProjects] = useState([]);
+
+  const addProject = () => {
+    const projectName = prompt("Enter project name:");
+    if (projectName) {
+      setProjects([...projects, { id: Date.now(), name: projectName }]);
+    }
+  };
+
+  return (
+    <div className="hidden border-r bg-muted/40 md:block">
+      <div className="flex h-full max-h-screen flex-col gap-2">
+        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+          <NavLink to="/" className="flex items-center gap-2 font-semibold">
+            <Package2 className="h-6 w-6" />
+            <span>Todo App</span>
+          </NavLink>
+        </div>
+        <div className="flex-1">
+          <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-2">
+            {navItems.map((item) => (
+              <SidebarNavLink key={item.to} to={item.to}>
+                {item.icon}
+                {item.title}
+              </SidebarNavLink>
+            ))}
+            <div className="mt-4">
+              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Projects
+              </h2>
+              <div className="mt-2 space-y-1">
+                {projects.map((project) => (
+                  <SidebarNavLink key={project.id} to={`/project/${project.id}`}>
+                    <Package2 className="h-4 w-4" />
+                    {project.name}
+                  </SidebarNavLink>
+                ))}
+                <Button variant="ghost" size="sm" className="w-full" onClick={addProject}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Project
+                </Button>
+              </div>
+            </div>
+          </nav>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const MobileSidebar = () => (
   <Sheet>
@@ -69,7 +98,7 @@ const MobileSidebar = () => (
           className="flex items-center gap-2 text-lg font-semibold mb-4"
         >
           <Package2 className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
+          <span className="sr-only">Todo App</span>
         </NavLink>
         {navItems.map((item) => (
           <SidebarNavLink key={item.to} to={item.to}>
